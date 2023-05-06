@@ -1,0 +1,17 @@
+.navbar {
+    background-color: #003463;
+    color: white;
+    border: 1px solid white;
+    border-radius: 0 0 10px 10px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.navbar-title {
+    flex: 1;
+    text-align: center;
+  }
+
+img {
+    height: 50px;
+}

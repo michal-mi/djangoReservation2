@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'editClasses.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function deleteClasses(id) {
+            csrftoken = getCookie("csrftoken")
+            console.log(id);
+            url = "/editClasses/" + id + "/"
+            $.ajax({
+                type: 'POST',
+                url: url,
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                   'id': id
+                },
+                success: function (response) {
+                    window.location.replace('/');
+                },
+            });
+        }
+
+    </script>
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Edycja zajęć</h3>
+        <a href="{% url 'classesDetails' pk=classes.id %}" class="btn rounded-3 border-light text-white mb-3"
+            style="background-color: #003463;">Szczegóły</a>
+        {% if classes.available_slots == classes.slots %}
+        <a onclick="deleteClasses('{{classes.id}}')" class="btn rounded-3 border-light text-white mb-3"
+            style="background-color: #951b02;">Usuń zajęcia</a>
+        {% else %}
+        <div class="mb-3 text-white fw-bolder">Istnieją już rezerwacje na te zajęcia. Usunięcie zajęć nie jest możliwe!
+        </div>
+        {% endif %}
+        {% if reservations|length == 0 %}
+        <form method="post" class="row g-3">
+            {% csrf_token %}
+            <!-- <input type="hidden" name="id" value="{{ classes.id }}"> -->
+            <div class="col-md-6">
+                <label for="beginning_time" class="form-label text-white">Początek zajęć *</label>
+                <input type="datetime-local" class="form-control" id="beginning_time" name="beginning_time"
+                    value="{{ classes.beginning_time|date:'Y-m-d\TH:i' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="ending_time" class="form-label text-white">Koniec zajęć *</label>
+                <input type="datetime-local" class="form-control" id="ending_time" name="ending_time"
+                    value="{{ classes.ending_time|date:'Y-m-d\TH:i' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="slots" class="form-label text-white">Liczba miejsc *</label>
+                <input type="number" class="form-control" id="slots" name="slots" min="1" value="{{ classes.slots }}"
+                    required>
+            </div>
+            <div class="col-md-6">
+                <label for="classroom" class="form-label text-white">Sala</label>
+                <input type="text" class="form-control" id="classroom" name="classroom" value="{{ classes.classroom }}">
+            </div>
+            <div class="col-md-6">
+                <label for="building" class="form-label text-white">Budynek</label>
+                <input type="text" class="form-control" id="building" name="building" value="{{ classes.building }}">
+            </div>
+            <div class="col-md-6">
+                <label for="online" class="form-label text-white">Czy zajęcia są online? *</label>
+                <select class="form-select" id="online" name="online" required>
+                    <option value="">Wybierz</option>
+                    <option value="1" {% if classes.online %}selected{% endif %}>Tak</option>
+                    <option value="0" {% if not classes.online %}selected{% endif %}>Nie</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label for="note" class="form-label text-white">Uwagi</label>
+                <textarea class="form-control" id="note" name="note" rows="3" value="{{ classes.notes }}"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label for="online" class="form-label text-white">Czy opublikować te zajęcia? *</label>
+                <select class="form-select" id="public" name="public" required>
+                    <option value="">Wybierz</option>
+                    <option value="1" {% if classes.public %}selected{% endif %}>Tak</option>
+                    <option value="0" {% if not classes.public %}selected{% endif %}>Nie</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn rounded-3 border-light text-white  mb-3"
+                    style="background-color: #003463;">Zapisz zmiany</button>
+            </div>
+        </form>
+        {% else %}
+        <div class="mb-3 text-white mt-3 fw-bolder">Istnieją już rezerwacje na te zajęcia. Modyfikacja nie jest możliwa!
+        </div>
+        {% endif %}
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

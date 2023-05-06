@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'beginNewSemester.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Rozpoczynanie nowego semestru</h3>
+
+        <div class="mb-3 mt-3 text-white">
+            <b>Przeczytaj uważnie!</b><br><br>
+            Rozpoczęcie nowego semestru spowoduje:<br>
+            <ol>
+                <li> Usunięcie wszystkich użytkowników poza prowadzącym zajęcia - użytkownicy otrzymają powiadomienia
+                    e-mail o zakończeniu semestru i usunięciu ich kont</li>
+                <li> Usunięcie wszystkich zajęć</li>
+                <li> Usunięcie wszystkich rezerwacji</li>
+            </ol>
+        </div>
+        <form action="/beginNewSemester/" method="post" class="row g-3">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label for="password" class="form-label text-white">Operacja wymaga uwierzytelnienia. Podaj hasło: *</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Hasło" required value="{{ request.POST.password|default:'' }}">
+            </div>
+            <br>
+            <div class="col-12 mb-3">
+                <button type="submit" class="btn rounded-3 border-light text-white" style="background-color: #ff0000;">Rozpocznij nowy semestr</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="" async defer></script>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

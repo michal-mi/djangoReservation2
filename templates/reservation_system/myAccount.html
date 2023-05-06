@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myAccount.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5">
+        <h3 class="mb-3 text-white">Twoje dane</h3>
+        <div class="mb-3 mt-3 text-white">
+            <ul>
+                <li> Nazwa użytkownika: {{user.username}}</li>
+                <li> Adres email: {{user.email}}</li>
+                <li> Imię: {{user.first_name}}</li>
+                <li> Nazwisko: {{user.last_name}}</li>
+                <li> Rola w systemie: {% if user.is_superuser == 0 %}student{% else %}prowadzący zajęcia{% endif %}</li>
+                <li> Status konta: {% if user.is_active == 1 %}aktywne{% else %}nieaktywne{% endif %}</li>
+                <li> Ostatnie logowanie: {{user.last_login|date:"d E Y, H:i"}}</li>
+                <li> Data rejestracji: {{user.date_joined}} </li>
+            </ul>
+        </div>
+        <h3 class="mb-3 text-white">Zmiana hasła</h3>
+
+        <form action="/myAccount/" method="post" class="row g-3">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label for="current_password" class="form-label text-white">Obecne hasło</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Obecne hasło" required value="{{ request.POST.password|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="new_password" class="form-label text-white">Nowe hasło</label>
+                <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Nowe hasło" required value="{{ request.POST.newPassword|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="password_confirmation" class="form-label text-white">Powtórz nowe hasło</label>
+                <input type="password" class="form-control" id="newPasswordConfirm" name="newPasswordConfirm" placeholder="Powtórz nowe hasło" required value="{{ request.POST.newPasswordConfirm|default:'' }}"> 
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn rounded-3 border-light text-white" style="background-color: #003463">Zmień hasło</button>
+            </div>
+        </form>
+        <div class="mb-3 mt-3 text-white">
+            Nowe hasło musi spełniać następujące wymagania:<br>
+            <ol>
+                <li> Posiadać minimum 8 znaków</li>
+                <li> Posiadać minimum 1 dużą literę</li>
+                <li> Posiadać minimum 1 małą literę</li>
+                <li> Posiadać minimum 1 cyfrę</li>
+                <li> Posiadać minimum 1 znak specjalny</li>
+            </ol>
+        </div>
+    </div>
+</body>
+<script src="" async defer></script>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'signup.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 mb-3">
+        <h3 class="mb-3 text-white">Zakładanie konta</h3>
+
+        <form action="/signup/" method="post" class="row g-3">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label for="username" class="form-label text-white">Nazwa użytkownika *</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Nazwa użytkownika"
+                    required value="{{ request.POST.username|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="firstName" class="form-label text-white">Imię *</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Imię" required
+                    value="{{ request.POST.firstName|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="lastName" class="form-label text-white">Nazwisko *</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Nazwisko" required
+                    value="{{ request.POST.lastName|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="email" class="form-label text-white">Adres email *</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="E-mail" required
+                    value="{{ request.POST.email|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="password" class="form-label text-white">Hasło *</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Hasło" required
+                    value="{{ request.POST.password|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="passwordConfirmation" class="form-label text-white">Potwierdź hasło *</label>
+                <input type="password" class="form-control" id="passwordConfirmation" name="passwordConfirmation"
+                    placeholder="Powtórz hasło" required value="{{ request.POST.passwordConfirmation|default:'' }}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn rounded-3 border-light text-white"
+                    style="background-color: #003463">Załóż konto</button>
+            </div>
+        </form>
+        <div class="mt-3 text-white">
+            Hasło musi spełniać następujące wymagania:<br>
+            <ol>
+                <li> Posiadać minimum 8 znaków</li>
+                <li> Posiadać minimum 1 dużą literę</li>
+                <li> Posiadać minimum 1 małą literę</li>
+                <li> Posiadać minimum 1 cyfrę</li>
+                <li> Posiadać minimum 1 znak specjalny</li>
+            </ol>
+        </div>
+
+    </div>
+</body>
+<script src="" async defer></script>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+</html>

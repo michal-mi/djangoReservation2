@@ -1,0 +1,113 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    {% load bootstrap_icons %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'navbar.css' %}">
+    <div class="container-fluid">
+        <img src="{% static 'logo.png' %}" alt="Logo Politechniki Gdańskiej" class="img">
+        {% if request.resolver_match.url_name == 'home'%}
+        <a class="navbar-brand">Strona główna</a>
+        {% elif request.resolver_match.url_name == 'signin'%}
+        <a class="navbar-brand">Logowanie</a>
+        {% elif request.resolver_match.url_name == 'signup'%}
+        <a class="navbar-brand">Rejestracja</a>
+        {% elif request.resolver_match.url_name == 'myAccount'%}
+        <a class="navbar-brand">Moje konto</a>
+        {% elif request.resolver_match.url_name == 'makeReservation'%}
+        <a class="navbar-brand">Rezerwacja terminu</a>
+        {% elif request.resolver_match.url_name == 'myReservations'%}
+        <a class="navbar-brand">Moje rezerwacje</a>
+        {% elif request.resolver_match.url_name == 'addClasses'%}
+        <a class="navbar-brand">Dodawanie zajęć</a>
+        {% elif request.resolver_match.url_name == 'classesList'%}
+        <a class="navbar-brand">Lista zajęć wraz z rezerwacjami</a>
+        {% elif request.resolver_match.url_name == 'beginNewSemester'%}
+        <a class="navbar-brand">Rozpoczynanie nowego semestru</a>
+        {% elif request.resolver_match.url_name == 'classesDetails'%}
+        <a class="navbar-brand">Szczegóły zajęć</a>
+        {% elif request.resolver_match.url_name == 'editClasses'%}
+        <a class="navbar-brand">Edytowanie zajęć</a>
+        {% else %}
+        <a class="navbar-brand">Nieznana lokalizacja</a>
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if request.resolver_match.url_name == 'signin' or request.resolver_match.url_name == 'signup'%}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Strona główna</a>
+                </li>
+                {% else %}
+                <!-- <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Strona główna</a>
+            </li> -->
+                {% endif %}
+            </ul>
+            {% if user.is_authenticated %}
+            <ul class="navbar-nav d-lg-flex">
+                {% if request.resolver_match.url_name != 'home' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Strona główna</a>
+                </li>
+                {% endif %}
+                {% if request.resolver_match.url_name != 'makeReservation' and not user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/makeReservation">Rezerwacja terminu</a>
+                </li>
+                {% endif %}
+                {% if request.resolver_match.url_name != 'myReservations' and not user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/myReservations">Moje rezerwacje</a>
+                </li>
+                {% endif %}
+                {% if request.resolver_match.url_name != 'addClasses' and user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/addClasses">Dodawanie zajęć</a>
+                </li>
+                {% endif %}
+                {% if request.resolver_match.url_name != 'classesList' and user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/classesList">Lista zajęć wraz z rezerwacjami</a>
+                </li>
+                {% endif %}
+                {% if request.resolver_match.url_name != 'beginNewSemester' and user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/beginNewSemester">Rozpoczynanie nowego semestru</a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% bs_icon 'person-circle' %} <span class="ms-2"></span> {{ user.first_name }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: #003463;"
+                        aria-labelledby="navbarDropdown">
+                        {% if request.resolver_match.url_name != 'myAccount'%}
+                        <li><a class="dropdown-item  text-white" style="background-color: #025d41;"
+                                href="/myAccount">Moje konto</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item  text-white" style="background-color: #730505;"
+                                href="/signout">Wyloguj się</a></li>
+                    </ul>
+                </li>
+            </ul>
+            {% else %}
+            <ul class="navbar-nav d-lg-flex">
+                {% if request.resolver_match.url_name == 'signup' or request.resolver_match.url_name == 'home'%}
+                <li class="nav-item">
+                    <a class="nav-link" href="/signin">Zaloguj się</a>
+                </li>
+                {% endif %}
+                {% if request.resolver_match.url_name == 'signin' or request.resolver_match.url_name == 'home'%}
+                <li class="nav-item">
+                    <a class="nav-link" href="/signup">Zarejestruj się</a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</nav>

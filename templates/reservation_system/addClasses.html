@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'addClasses.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body d-flex flex-column">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Dodawanie zajęć</h3>
+
+        <form method="post" class="row g-3">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label for="beginning_time" class="form-label text-white">Początek zajęć *</label>
+                <input type="datetime-local" class="form-control" id="beginning_time" name="beginning_time" required value="{{ request.POST.beginning_time|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="ending_time" class="form-label text-white">Koniec zajęć *</label>
+                <input type="datetime-local" class="form-control" id="ending_time" name="ending_time" required value="{{ request.POST.ending_time|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="slots" class="form-label text-white">Liczba miejsc *</label>
+                <input type="number" class="form-control" id="slots" name="slots" min="1" required value="{{ request.POST.slots|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="classroom" class="form-label text-white">Sala</label>
+                <input type="text" class="form-control" id="classroom" name="classroom" value="{{ request.POST.classroom|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="building" class="form-label text-white">Budynek</label>
+                <input type="text" class="form-control" id="building" name="building" value="{{ request.POST.building|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label for="online" class="form-label text-white">Czy zajęcia są online? *</label>
+                <select class="form-select" id="online" name="online" required>
+                    <option value="">Wybierz</option>
+                    <option value="1">Tak</option>
+                    <option value="0">Nie</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label for="note" class="form-label text-white">Uwagi</label>
+                <textarea class="form-control" id="note" name="note" rows="3" value="{{ request.POST.note|default:'' }}"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label for="online" class="form-label text-white">Czy opublikować te zajęcia? *</label>
+                <select class="form-select" id="public" name="public" required>
+                    <option value="">Wybierz</option>
+                    <option value="1">Tak</option>
+                    <option value="0">Nie</option>
+                </select>
+            </div>
+            <div class="col-12 mb-3">
+                <button type="submit" class="btn rounded-3 border-light text-white" style="background-color: #003463;">Utwórz</button>
+            </div>
+        </form>
+    </div>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

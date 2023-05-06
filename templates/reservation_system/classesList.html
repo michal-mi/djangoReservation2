@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'classesList.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Lista zajęć</h3>
+        <div class="container d-flex align-items-center justify-content-center">
+        <table class="table text-white  mb-3">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Początek zajęć</th>
+                    <th scope="col">Koniec zajęć</th>
+                    <th scope="col">Liczba miejsc</th>
+                    <th scope="col">Dostępne miejsca</th>
+                    <th scope="col">Sala</th>
+                    <th scope="col">Budynek</th>
+                    <th scope="col">Online</th>
+                    <th scope="col">Publiczne</th>
+                    <th scope="col">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class in classes %}
+                <tr>
+                    <th scope="row">{{ class.id }}</th>
+                    <td>{{ class.beginning_time }}</td>
+                    <td>{{ class.ending_time }}</td>
+                    <td>{{ class.slots }}</td>
+                    <td>{{ class.available_slots }}</td>
+                    <td>{{ class.classroom }}</td>
+                    <td>{{ class.building }}</td>
+                    <td>{% if class.online %}Tak{% else %}Nie{% endif %}</td>
+                    <td>{% if class.public %}Tak{% else %}Nie{% endif %}</td>
+                    <td>
+                        <a href="{% url 'classesDetails' pk=class.id %}" class="btn rounded-3 border-light text-white" style="background-color: #003463;">Szczegóły</a>
+                        <a href="{% url 'editClasses' pk=class.id %}" class="btn rounded-3 border-light text-white" style="background-color: #003463;">Edycja</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

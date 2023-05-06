@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myReservations.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function cancelReservation(args) {
+            var params = args.split(",");
+            var id = params[0];
+            var begTime = params[1];
+            var classesId = params[2];
+            csrftoken = getCookie("csrftoken")
+            url = "/myReservations/"
+            $.ajax({
+                type: 'POST',
+                url: url,
+                headers: { 'X-CSRFToken': csrftoken },
+                data: {
+                    'id': id,
+                    'begTime': begTime,
+                    'classesId': classesId
+                },
+                success: function (response) {
+                    window.location.replace('/');
+                },
+            });
+        }
+
+    </script>
+
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Moje rezerwacje</h3>
+        <div class="container d-flex align-items-center justify-content-center">
+            <table class="table text-white  mb-3">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Początek zajęć</th>
+                        <th scope="col">Koniec zajęć</th>
+                        <th scope="col">Notatka</th>
+                        <th scope="col">Online</th>
+                        <th scope="col">Sala</th>
+                        <th scope="col">Budynek</th>
+                        <th scope="col">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <th scope="row">{{ reservation.friendly_number }}</th>
+                        <td>{{ reservation.date }}</td>
+                        <td>{{ reservation.beggining_time }}</td>
+                        <td>{{ reservation.ending_time }}</td>
+                        <td>{{ reservation.note }}</td>
+                        <td>{% if reservation.online %}Tak{% else %}Nie{% endif %}</td>
+                        <td>{{ reservation.classroom }}</td>
+                        <td>{{ reservation.building }}</td>
+                        <td>
+                        {% if reservation.classes_beg|time:"H:i:s" > now|time:"H:i:s" %}
+                            <a onclick="cancelReservation('{{reservation.id}},{{reservation.beggining_time}},{{reservation.classes_id}}')"
+                                class="btn rounded-3 border-light text-white mb-3"
+                                style="background-color: #951b02;">Anuluj rezerwację</a>
+                        {% else %}
+                        <a onclick="cancelReservation('{{reservation.id}},{{reservation.beggining_time}},{{reservation.classes_id}}')"
+                                class="btn rounded-3 border-light text-white mb-3 disabled"
+                                style="background-color: #951b02;">Anuluj rezerwację (czas zajęć minął)</a>
+                        {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

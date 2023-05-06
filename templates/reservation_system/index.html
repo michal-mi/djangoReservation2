@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        {% if user.is_authenticated %}
+        <h3 class="mb-3 text-white">Cześć {{user.first_name}}!</h3>
+        {% if not user.is_superuser %}
+        <button type="button" class="btn rounded-3 border-light text-white" style="background-color: #003463;" onclick=window.location.href='makeReservation'>Dokonaj rezerwacji</button>
+        <button type="button" class="btn rounded-3 border-light text-white" style="background-color: #003463;" onclick=window.location.href='myReservations'>Moje rezerwacje</button>
+        {% else %}
+        <button type="button" class="btn rounded-3 border-light text-white" style="background-color: #003463;" onclick=window.location.href='addClasses'>Dodaj zajęcia</button>
+        <button type="button" class="btn rounded-3 border-light text-white" style="background-color: #003463;" onclick=window.location.href='classesList'>Lista zajęć wraz z rezerwacjami</button>
+        <button type="button" class="btn rounded-3 border-light text-white" style="background-color: #003463;" onclick=window.location.href='beginNewSemester'>Rozpoczynanie nowego semestru</button>
+        {% endif %}
+        {% else %}
+        <h3 class="mb-3 text-white">Strona główna</h3>
+        <div class="mb-3 text-white">
+            Witaj w systemie służącym do rezerwowania terminów na oddawanie prac z przedmiotu Języki Skryptowe!<br><br>
+            Po zarejestrowaniu i potwierdzeniu adresu email będziesz miała/miał dostęp do systemu jako student. Będziesz
+            mogła/mógł:<br>
+            <ol>
+                <li> Dokonywać rezerwacji terminów </li>
+                <li> Zarządzać swoimi rezerwacjami</li>
+                <li> Mieć podgląd terminów zajęć</li>
+            </ol>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script src="" async defer></script>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

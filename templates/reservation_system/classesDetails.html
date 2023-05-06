@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'classesDetails.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Szczegóły zajęć</h3>
+        <ul class="mb-3 mt-3 text-white">
+            <li>Czas rozpoczęcia: {{ classes.beginning_time }}</li>
+            <li>Czas zakończenia: {{ classes.ending_time }}</li>
+            <li>Miejsc: {{ classes.slots }}</li>
+            <li>Wolnych miejsc: {{ classes.available_slots }}</li>
+            <li>Sala: {{ classes.classroom }}</li>
+            <li>Budynek: {{ classes.building }}</li>
+            <li>Czy w formie zdalnej: {% if classes.online %}Tak{% else %}Nie{% endif %}</li>
+            <li>Czy zostały opublikowane: {% if classes.public %}Tak{% else %}Nie{% endif %}</li>
+        </ul>
+        <a href="{% url 'editClasses' pk=classes.id %}" class="btn rounded-3 border-light text-white mb-4" style="background-color: #003463;">Edycja</a>
+        <h3 class="mb-3 text-white mt-2">Rezerwacje</h3>
+        <table class="table text-white">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Imię studenta</th>
+                    <th scope="col">Nazwisko studenta</th>
+                    <th scope="col">Czas rozpoczęcia</th>
+                    <th scope="col">Czas zakończenia</th>
+                    <th scope="col">Notatka</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                <tr>
+                    <th scope="row">{{ reservation.friendly_number }}</th>
+                    <td>{{ reservation.first_name }}</td>
+                    <td>{{ reservation.last_name }}</td>
+                    <td>{{ reservation.beginning_time}}</td>
+                    <td>{{ reservation.ending_time }}</td>
+                    <td>{{ reservation.note }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

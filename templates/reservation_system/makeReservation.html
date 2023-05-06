@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'makeReservation.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reservation system</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var slotsInfo
+        var friendlyNumber
+        var classId
+        var begginingTime
+        var endingTime
+        var availableSlots
+
+        function setGetParameter(args) {
+            var params = args.split(",");
+            classId = params[0];
+            var slots = params[1];
+            availableSlots = params[2];
+            slotsInfo = params.slice(3).join(',')
+
+            slotsInfo = slotsInfo.slice(1, -1);
+            const jsonData = JSON.parse(slotsInfo);
+
+            var freeKeySlot = -1
+            friendlyNumber = Date.now().toString(32).slice(-4)
+            for (const key in jsonData) {
+                if (jsonData[key].available == 1) {
+                    freeKeySlot = key
+                    begginingTime = jsonData[key].beginning_time
+                    endingTime = jsonData[key].ending_time
+                    break;
+                }
+            }
+
+            if (freeKeySlot != -1) {
+                jsonData[freeKeySlot].available = 0
+                const num = document.getElementById('friendlyNumber')
+                const begTime = document.getElementById('beginningTime')
+                const endTime = document.getElementById('endingTime')
+                num.innerHTML = friendlyNumber
+                begTime.innerHTML = begginingTime
+                endTime.innerHTML = endingTime
+                const button = document.getElementById('submitButton')
+                button.style.display = 'block'
+                slotsInfo = JSON.stringify(jsonData)
+            } else {
+            }
+
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function makeReservation() {
+            console.log(availableSlots)
+            const note = document.getElementById('note').value
+            const csrftoken = getCookie('csrftoken');
+
+            if (availableSlots > 0) {
+                availableSlots = availableSlots - 1
+                $.ajax({
+                    type: 'POST',
+                    url: '/makeReservation/',
+                    headers: { 'X-CSRFToken': csrftoken },
+                    data: {
+                        'slots_info': slotsInfo,
+                        'available_slots': availableSlots,
+                        'note': note,
+                        'friendly_number': friendlyNumber,
+                        'class_id': classId,
+                        'beggining_time': begginingTime,
+                        'ending_time': endingTime
+                    },
+                    success: function (response) {
+                        window.location.replace('/');
+                    },
+                });
+            }
+        }
+
+    </script>
+</head>
+
+<body class="body">
+
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 flex-grow-1">
+        <h3 class="mb-3 text-white">Rezerwacja terminu</h3>
+        <div class="rounded p-3 mb-3 bg-success">
+            <h4 class="text-white">1. Wybierz termin z kalendarza zajęć</h4>
+            {% for date, classes in dates.items %}
+            <h5 class="mt-4 text-white">{{ date }}</h5>
+            <table class="table text-white mb-3">
+                <thead>
+                    <tr>
+                        <th>Godzina rozpoczęcia</th>
+                        <th>Godzina zakończenia</th>
+                        <th>Liczba wolnych miejsc</th>
+                        <th>Miejsce</th>
+                        <th>Online</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for single_class in classes %}
+                    <tr>
+                        <td>{{ single_class.start_time }}</td>
+                        <td>{{ single_class.end_time }}</td>
+                        <td>{{ single_class.available_slots }}</td>
+                        <td>{{ single_class.classroom }}, {{ single_class.building }}</td>
+                        <td>{% if single_class.online %}Tak{% else %}Nie{% endif %}</td>
+                        {% if single_class.available_slots > 0 %}
+                        <td>
+                            <button
+                                onclick="setGetParameter('{{single_class.class_id}},{{single_class.slots}},{{single_class.available_slots}},{{single_class.slots_info}}')"
+                                type="button" class="btn rounded-3 border-light text-white"
+                                style="background-color: #003463;">Wybierz</button>
+                        </td>
+                        {% else %}
+                        <td>
+                            <button type="button" class="btn rounded-3 border-light text-white disabled"
+                                style="background-color: #be0f0f;">Brak miejsc</button>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+        <div class="rounded p-3 mb-3 bg-success">
+            <h4 class="text-white">2. Dodaj swoją notatkę</h4>
+            <div class="col-12">
+                <label for="note" class="form-label text-white">Miejsce na notatkę</label>
+                <textarea class="form-control" id="note" name="note" rows="3"
+                    value="{{ request.POST.note|default:'' }}"></textarea>
+            </div>
+        </div>
+        <div class="rounded p-3 mb-3 bg-success text-white">
+            <h4 class="text-white">3. Podsumowanie</h4>
+            Oto dane Twojej rezerwacji. Kliknij "Potwierdź" aby rezerwacja została dokonana:
+            <ul>
+                <li> Numer:
+                    <div id="friendlyNumber" value="błąd" class="text-white" />
+                </li>
+                <li> Godzina rozpoczęcia slotu:
+                    <div id="beginningTime" value="błąd" class="text-white" />
+                </li>
+                <li> Godzina zakończenia:
+                    <div id="endingTime" value="błąd" class="text-white" />
+                </li>
+            </ul>
+            <button onclick="makeReservation()" type="submit" class="btn rounded-3 border-light text-white"
+                style="background-color: #003463; display: none;" id="submitButton">Potwierdź</button>
+        </div>
+    </div>
+
+    <script src="" async defer></script>
+</body>
+<footer class="footer mt-auto fixed-bottom">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-primary d-flex justify-content-between align-items-center"
+        role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</footer>
+
+</html>

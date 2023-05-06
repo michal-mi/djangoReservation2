@@ -1,0 +1,7 @@
+Cześć {{name}},
+Twoje konto zostało utworzone. Potwierdź proszę swój adres e-mail
+
+Link do potwierdzenia konta: http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+Pozdrowienia,
+Administracja
